@@ -9,11 +9,15 @@ use Illuminate\Http\Request;
 
 class SeriesController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $series = Serie::query()->orderBy('name')->get();
+        $successMessage = session('message.success');
 
-        return view('series.index')->with('series', $series);
+        return view('series.index')
+            ->with('series', $series)
+            ->with('successMessage', $successMessage)
+        ;
     }
 
     public function create(): View
@@ -21,22 +25,46 @@ class SeriesController extends Controller
         return view('series.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function edit(Serie $series)
     {
-        Serie::create($request->all());
-
-        return to_route('series.index');
+        return view('series.edit')
+            ->with('series', $series)
+        ;
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
+    {
+        $series = Serie::create($request->all());
+
+        return to_route('series.index')
+            ->with('message.success', "Series '{$series->name}' was added with success!")
+        ;
+    }
+
+    public function update(Serie $series, Request $request)
+    {
+        $oldName = $series->name;
+        $newName = $request->post('name');
+
+        $series->fill($request->all());
+        $series->save();
+
+        return to_route('series.index')
+            ->with('message.success', "Series '{$oldName}' was modified to '{$newName}' with success!")
+        ;
+    }
+
+    public function destroy(Serie $series): RedirectResponse
     {
         /** when using a selected method Route::{method}('series/destroy/{id}') */
         /** Serie::destroy($request->id); */
         /** when using Route::resource('/series') the param will use the same name of route */
-        Serie::destroy($request->series);
+        $series->delete();
 
-        $request->session()->put('message.success', 'Series was removed with success');
+        // $request->session()->flash('message.success', "Series '{$series->name}' was removed with success!");
 
-        return to_route('series.index');
+        return to_route('series.index')
+            ->with('message.success', "Series '{$series->name}' was removed with success!")
+        ;
     }
 }
