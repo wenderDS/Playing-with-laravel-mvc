@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SeriesFormRequest;
 use App\Models\Serie;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -32,7 +33,7 @@ class SeriesController extends Controller
         ;
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SeriesFormRequest $request): RedirectResponse
     {
         $series = Serie::create($request->all());
 
@@ -41,7 +42,7 @@ class SeriesController extends Controller
         ;
     }
 
-    public function update(Serie $series, Request $request)
+    public function update(Serie $series, SeriesFormRequest $request)
     {
         $oldName = $series->name;
         $newName = $request->post('name');
