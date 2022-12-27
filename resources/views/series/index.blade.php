@@ -1,4 +1,4 @@
-<x-layout title="Series">
+<x-layout :title="__('messages.app_name')">
     <a href="{{ route('series.create') }}" class="btn btn-dark mb-2">New</a>
 
     @isset($successMessage)
