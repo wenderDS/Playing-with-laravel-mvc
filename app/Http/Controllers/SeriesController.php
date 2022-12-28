@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
-use App\Models\Serie;
+use App\Models\Episode;
+use App\Models\Season;
+use App\Models\Series;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,7 +14,11 @@ class SeriesController extends Controller
 {
     public function index(Request $request): View
     {
-        $series = Serie::query()->orderBy('name')->get();
+        $series = Series::all();
+//        $series = Series::query()
+//            ->orderBy('name')
+//            ->get()
+//        ;
         $successMessage = session('message.success');
 
         return view('series.index')
@@ -26,7 +32,7 @@ class SeriesController extends Controller
         return view('series.create');
     }
 
-    public function edit(Serie $series)
+    public function edit(Series $series)
     {
         return view('series.edit')
             ->with('series', $series)
@@ -35,14 +41,38 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request): RedirectResponse
     {
-        $series = Serie::create($request->all());
+        $series = Series::create($request->all());
+        $seasonsArray = [];
+
+        for ($i = 1; $i <= $request->seasonsQty; $i++) {
+            $seasonsArray[] = [
+                'series_id' => $series->id,
+                'number' => $i
+            ];
+        }
+
+        Season::insert($seasonsArray);
+
+        $seasons = $series->seasons;
+        $episodesArray = [];
+
+        foreach ($seasons as $season) {
+            for ($j = 1; $j <= $request->episodesPerSeason; $j++) {
+                $episodesArray[] = [
+                    'season_id' => $season->id,
+                    'number' => $j
+                ];
+            }
+        }
+
+        Episode::insert($episodesArray);
 
         return to_route('series.index')
             ->with('message.success', "Series '{$series->name}' was added with success!")
         ;
     }
 
-    public function update(Serie $series, SeriesFormRequest $request)
+    public function update(Series $series, SeriesFormRequest $request)
     {
         $oldName = $series->name;
         $newName = $request->post('name');
@@ -55,10 +85,10 @@ class SeriesController extends Controller
         ;
     }
 
-    public function destroy(Serie $series): RedirectResponse
+    public function destroy(Series $series): RedirectResponse
     {
         /** when using a selected method Route::{method}('series/destroy/{id}') */
-        /** Serie::destroy($request->id); */
+        /** Series::destroy($request->id); */
         /** when using Route::resource('/series') the param will use the same name of route */
         $series->delete();
 
