@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EpisodesController;
 use App\Http\Controllers\SeasonsController;
 use App\Http\Controllers\SeriesController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,9 @@ Route::resource('/series', SeriesController::class)
     ->except(['show']);
 
 Route::get('/series/{series}/season', [SeasonsController::class, 'index'])->name('seasons.index');
+
+Route::get('/seasons/{season}/episode', [EpisodesController::class, 'index'])->name('episodes.index');
+Route::post('/seasons/{season}/episode', [EpisodesController::class, 'update'])->name('episodes.update');
 
 /**
     Route::resource('/series', SeriesController::class)
