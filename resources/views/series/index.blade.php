@@ -1,11 +1,5 @@
-<x-layout :title="__('messages.app_name')">
+<x-layout :title="__('messages.app_name')"  :success-message="$successMessage">
     <a href="{{ route('series.create') }}" class="btn btn-dark mb-2">New</a>
-
-    @isset($successMessage)
-    <div class="alert alert-success">
-        {{ $successMessage }}
-    </div>
-    @endisset
 
     <ul class="list-group">
         @foreach ($series as $item)
