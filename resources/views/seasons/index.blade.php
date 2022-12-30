@@ -1,5 +1,5 @@
 <x-layout title="Seasons of '{!! $series->name !!}'">
-    <a href="{{ route('series.index') }}" class="btn btn-info mb-2">back</a>
+    <a href="{{ route('series.index') }}" class="btn btn-outline-info mb-2">back</a>
 
     <ul class="list-group">
         @foreach ($seasons as $season)
