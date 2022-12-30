@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\EpisodesController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SeasonsController;
 use App\Http\Controllers\SeriesController;
+use App\Http\Controllers\UsersController;
+use App\Http\Middleware\UserAuthenticator;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('/series');
-});
+})->middleware(UserAuthenticator::class);
 
 Route::resource('/series', SeriesController::class)
     ->except(['show']);
@@ -27,6 +30,13 @@ Route::get('/series/{series}/season', [SeasonsController::class, 'index'])->name
 
 Route::get('/seasons/{season}/episode', [EpisodesController::class, 'index'])->name('episodes.index');
 Route::post('/seasons/{season}/episode', [EpisodesController::class, 'update'])->name('episodes.update');
+
+Route::get('/login', [LoginController::class, 'index'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.login');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/register', [UsersController::class, 'create'])->name('users.register');
+Route::post('/register', [UsersController::class, 'store'])->name('users.store');
 
 /**
     Route::resource('/series', SeriesController::class)
